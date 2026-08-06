@@ -24,7 +24,7 @@ export interface AppConfig {
 export const APP_CONFIG_DEFAULTS: AppConfig = {
   companyName: 'LiveKit',
   pageTitle: 'LiveKit Voice Agent',
-  pageDescription: 'A voice agent built with LiveKit',
+  pageDescription: 'Horoscopic voice bot',
 
   supportsChatInput: true,
   supportsVideoInput: true,

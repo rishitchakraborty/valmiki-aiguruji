@@ -62,7 +62,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     >
       <head>
         {styles && <style>{styles}</style>}
-        <title>Quarkgen Real Estate</title>
+        <title>Quarkgen Valmiki</title>
         <meta name="description" content={pageDescription} />
       </head>
       <body className="overflow-x-hidden">
