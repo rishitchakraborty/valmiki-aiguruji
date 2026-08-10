@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { PlacesAutocomplete, Place } from "@/components/ui/places-autocomplete";
 
 export interface UserFormData {
   name: string;
@@ -7,6 +8,7 @@ export interface UserFormData {
   timeOfBirth: string;
   placeOfBirth: string;
   language: "hindi" | "english";
+  placeDetails?: Place;
 }
 
 function WelcomeImage() {
@@ -49,7 +51,7 @@ export const WelcomeView = ({
       !formData.name.trim() ||
       !formData.dateOfBirth.trim() ||
       !formData.timeOfBirth.trim() ||
-      !formData.placeOfBirth.trim() ||
+      !formData.placeOfBirth ||
       !formData.language
     ) {
       alert("All fields are mandatory. Please fill in all details.");
@@ -124,15 +126,16 @@ export const WelcomeView = ({
             <label className="block text-xs font-semibold text-foreground mb-1">
               Place of Birth <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
+            <PlacesAutocomplete
               required
-              value={formData.placeOfBirth}
-              onChange={(e) =>
-                setFormData({ ...formData, placeOfBirth: e.target.value })
+              value={formData.placeDetails}
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, placeOfBirth: val }))
               }
-              placeholder="e.g. New Delhi, India"
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              onSelect={(place: Place) => {
+                setFormData((prev) => ({ ...prev, placeOfBirth: place }));
+              }}
+              placeholder="e.g. Kolkata, West Bengal, India"
             />
           </div>
 
