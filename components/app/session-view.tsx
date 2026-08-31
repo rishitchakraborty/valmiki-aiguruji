@@ -138,6 +138,7 @@ export const SessionView = ({
           time_of_birth: formData.timeOfBirth,
           place_of_birth: formData.placeOfBirth,
           language: formData.language,
+          current_location: formData.currentLocation,
         };
 
         const data = new TextEncoder().encode(JSON.stringify(payload));

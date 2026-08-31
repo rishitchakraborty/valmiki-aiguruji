@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PlacesAutocomplete, Place } from "@/components/ui/places-autocomplete";
+import { Loader2, MapPin } from "lucide-react";
+
+export interface CurrentLocation {
+  latitude: number;
+  longitude: number;
+  timeZone: string;
+}
 
 export interface UserFormData {
   name: string;
@@ -8,8 +14,14 @@ export interface UserFormData {
   timeOfBirth: string;
   placeOfBirth: string;
   language: "hindi" | "english";
-  placeDetails?: Place;
+  currentLocation: CurrentLocation;
 }
+
+const DEFAULT_LOCATION: CurrentLocation = {
+  latitude: 22.5726,
+  longitude: 88.3639,
+  timeZone: "Asia/Kolkata",
+};
 
 function WelcomeImage() {
   return (
@@ -37,13 +49,47 @@ export const WelcomeView = ({
   onStartCall,
   ref,
 }: React.ComponentProps<"div"> & WelcomeViewProps) => {
-  const [formData, setFormData] = useState<UserFormData>({
+  const [formData, setFormData] = useState({
     name: "",
     dateOfBirth: "",
     timeOfBirth: "",
     placeOfBirth: "",
-    language: "english",
+    language: "english" as "hindi" | "english",
   });
+
+  const [currentLocation, setCurrentLocation] = useState<CurrentLocation>(DEFAULT_LOCATION);
+  const [locationStatus, setLocationStatus] = useState<"detecting" | "detected" | "default">("detecting");
+
+  const detectLocation = () => {
+    if (typeof window !== "undefined" && "geolocation" in navigator) {
+      setLocationStatus("detecting");
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
+          setCurrentLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            timeZone: tz,
+          });
+          setLocationStatus("detected");
+        },
+        (error) => {
+          console.warn("Geolocation permission not approved or error, using Kolkata default:", error.message);
+          setCurrentLocation(DEFAULT_LOCATION);
+          setLocationStatus("default");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    } else {
+      setCurrentLocation(DEFAULT_LOCATION);
+      setLocationStatus("default");
+    }
+  };
+
+  // Fetch location from browser automatically on component mount
+  useEffect(() => {
+    detectLocation();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,13 +97,16 @@ export const WelcomeView = ({
       !formData.name.trim() ||
       !formData.dateOfBirth.trim() ||
       !formData.timeOfBirth.trim() ||
-      !formData.placeOfBirth ||
+      !formData.placeOfBirth.trim() ||
       !formData.language
     ) {
       alert("All fields are mandatory. Please fill in all details.");
       return;
     }
-    onStartCall(formData);
+    onStartCall({
+      ...formData,
+      currentLocation,
+    });
   };
 
   return (
@@ -126,17 +175,64 @@ export const WelcomeView = ({
             <label className="block text-xs font-semibold text-foreground mb-1">
               Place of Birth <span className="text-red-500">*</span>
             </label>
-            <PlacesAutocomplete
+            <input
+              type="text"
               required
-              value={formData.placeDetails}
-              onChange={(val) =>
-                setFormData((prev) => ({ ...prev, placeOfBirth: val }))
+              value={formData.placeOfBirth}
+              onChange={(e) =>
+                setFormData({ ...formData, placeOfBirth: e.target.value })
               }
-              onSelect={(place: Place) => {
-                setFormData((prev) => ({ ...prev, placeOfBirth: place }));
-              }}
-              placeholder="e.g. Kolkata, West Bengal, India"
+              placeholder="e.g. New Delhi, India"
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
+          </div>
+
+          {/* Separate Current Location Section with fetch button */}
+          <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="block text-xs font-semibold text-foreground">
+                  Current Location
+                </span>
+                <span className="text-[11px] text-muted-foreground block truncate">
+                  {locationStatus === "detecting" && "Detecting current location..."}
+                  {locationStatus === "detected" && (
+                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                      Lat: {currentLocation.latitude.toFixed(4)}, Long: {currentLocation.longitude.toFixed(4)}
+                    </span>
+                  )}
+                  {locationStatus === "default" && (
+                    <span>Default: Kolkata (22.5726, 88.3639)</span>
+                  )}
+                </span>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={detectLocation}
+                disabled={locationStatus === "detecting"}
+                className="h-8 shrink-0 text-xs px-2.5 flex items-center gap-1.5"
+              >
+                {locationStatus === "detecting" ? (
+                  <>
+                    <Loader2 className="size-3 animate-spin" />
+                    <span>Detecting...</span>
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="size-3 text-primary" />
+                    <span>Fetch Location</span>
+                  </>
+                )}
+              </Button>
+            </div>
+            <div className="text-[10px] text-muted-foreground flex items-center justify-between border-t border-border/40 pt-1.5">
+              <span>Timezone: {currentLocation.timeZone}</span>
+              <span>
+                {locationStatus === "detected" ? "Browser GPS Active" : "Default Mode"}
+              </span>
+            </div>
           </div>
 
           <div>

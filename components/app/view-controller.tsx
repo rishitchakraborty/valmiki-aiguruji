@@ -39,7 +39,12 @@ export function ViewController({ appConfig }: ViewControllerProps) {
     dateOfBirth: '',
     timeOfBirth: '',
     placeOfBirth: '',
-    language: '',
+    language: 'english',
+    currentLocation: {
+      latitude: 22.5726,
+      longitude: 88.3639,
+      timeZone: 'Asia/Kolkata',
+    },
   });
 
   const handleStartCall = (data: UserFormData) => {
