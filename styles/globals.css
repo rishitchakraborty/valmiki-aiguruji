@@ -122,3 +122,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Celestial & Vedic Ambience Utilities */
+.celestial-bg {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(217, 119, 6, 0.06) 0%, transparent 50%);
+}
+
+.dark .celestial-bg {
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(129, 140, 248, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(234, 88, 12, 0.08) 0%, transparent 55%);
+}
+
+.golden-glow {
+  box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.18);
+}
+
+.dark .golden-glow {
+  box-shadow: 0 0 45px -5px rgba(245, 158, 11, 0.25);
+}
+
