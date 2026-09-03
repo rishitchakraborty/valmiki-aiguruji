@@ -26,9 +26,9 @@ export const APP_CONFIG_DEFAULTS: AppConfig = {
   pageTitle: 'LiveKit Voice Agent',
   pageDescription: 'Horoscopic voice bot',
 
-  supportsChatInput: true,
-  supportsVideoInput: true,
-  supportsScreenShare: true,
+  supportsChatInput: false,
+  supportsVideoInput: false,
+  supportsScreenShare: false,
   isPreConnectBufferEnabled: true,
 
   logo: '/lk-logo.svg',
