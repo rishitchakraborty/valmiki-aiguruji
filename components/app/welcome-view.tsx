@@ -24,7 +24,7 @@ import { cn } from "@/lib/shadcn/utils";
 export interface CurrentLocation {
   latitude: number;
   longitude: number;
-  timeZone: string;
+  timeZone: number;
 }
 
 export interface UserFormData {
@@ -39,7 +39,7 @@ export interface UserFormData {
 const DEFAULT_LOCATION: CurrentLocation = {
   latitude: 22.5726,
   longitude: 88.3639,
-  timeZone: "Asia/Kolkata",
+  timeZone: 5.5,
 };
 
 interface WelcomeViewProps {
@@ -68,11 +68,11 @@ export const WelcomeView = forwardRef<
       setLocationStatus("detecting");
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
+          const tzOffset = -new Date().getTimezoneOffset() / 60;
           setCurrentLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            timeZone: tz,
+            timeZone: tzOffset,
           });
           setLocationStatus("detected");
         },
@@ -409,7 +409,9 @@ export const WelcomeView = forwardRef<
                   <span className="font-mono text-[10px] text-foreground/80">
                     {currentLocation.latitude.toFixed(4)}° N, {currentLocation.longitude.toFixed(4)}° E
                   </span>
-                  <span className="text-[10px]">{currentLocation.timeZone}</span>
+                  <span className="text-[10px]">
+                    UTC{currentLocation.timeZone >= 0 ? `+${currentLocation.timeZone}` : currentLocation.timeZone}
+                  </span>
                 </div>
                 <p className="text-[10px] text-muted-foreground/80 leading-tight">
                   Calibrates real-time planetary transits (Gochar) and Prashna Kundli with your current sky.

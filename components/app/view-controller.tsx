@@ -43,7 +43,7 @@ export function ViewController({ appConfig }: ViewControllerProps) {
     currentLocation: {
       latitude: 22.5726,
       longitude: 88.3639,
-      timeZone: 'Asia/Kolkata',
+      timeZone: 5.5,
     },
   });
 
